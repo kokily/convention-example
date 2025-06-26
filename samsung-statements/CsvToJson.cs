@@ -61,13 +61,13 @@ namespace SamsungStatements
                         continue;
                     }
 
-                    var dColVal = GetCellValue(rows, rIdx, 3)?.ToString()?.Trim() ?? "";
-
-                    if (dColVal == "[ 합 계 ]")
-                    {
-                        logManager?.LogMessage($"DEBUG: [ 합 계 ] 라인 스킵 (행 {rIdx + 1})");
-                        continue;
-                    }
+                    //                    var dColVal = GetCellValue(rows, rIdx, 3)?.ToString()?.Trim() ?? "";
+                    //
+                    //                    if (dColVal == "[ 합 계 ]")
+                    //                    {
+                    //                        logManager?.LogMessage($"DEBUG: [ 합 계 ] 라인 스킵 (행 {rIdx + 1})");
+                    //                        continue;
+                    //                    }
 
                     var data = new RawData
                     {
@@ -92,7 +92,12 @@ namespace SamsungStatements
                     };
 
                     jsonData.Add(data);
-                    logManager?.LogMessage($"DEBUG: {rIdx + 1}번째 행 RawData 추가: {data.품명}");
+                    
+                    // 100개 단위로 진행률 표시
+                    if ((rIdx + 1) % 100 == 0)
+                    {
+                        logManager?.LogMessage($"DEBUG: 엑셀 데이터 읽기 진행률: {rIdx + 1}/{rowCount} 행 처리 완료");
+                    }
                 }
 
                 logManager?.LogMessage($"DEBUG: CsvToJson 종료. 변환된 데이터 수량 : {jsonData.Count}");
