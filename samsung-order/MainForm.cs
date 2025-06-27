@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Drawing;
 
 namespace SamsungOrder
 {
@@ -21,18 +22,46 @@ namespace SamsungOrder
         public MainForm()
         {
             InitializeComponent();
+            LoadApplicationIcon();
             SetupUI();
             SetupConsoleRedirect();
         }
 
         private void InitializeComponent()
         {
-            this.Text = "삼성웰스토리 결산서 전처리기";
+            this.Text = "삼성웰스토리 발주서 전처리기";
             this.Size = new Size(800, 600);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.AllowDrop = true;
             this.DragEnter += MainForm_DragEnter;
             this.DragDrop += MainForm_DragDrop;
+        }
+
+        private void LoadApplicationIcon()
+        {
+            try
+            {
+                // 현재 실행 파일과 같은 디렉토리에서 아이콘 찾기
+                string iconPath = Path.Combine(Application.StartupPath, "icon.ico");
+                if (File.Exists(iconPath))
+                {
+                    this.Icon = new Icon(iconPath);
+                }
+                else
+                {
+                    // 개발 환경에서는 프로젝트 루트에서 찾기
+                    string projectIconPath = Path.Combine(Application.StartupPath, "..", "..", "..", "icon.ico");
+                    if (File.Exists(projectIconPath))
+                    {
+                        this.Icon = new Icon(projectIconPath);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // 아이콘 로딩 실패 시 무시 (애플리케이션 실행에는 영향 없음)
+                Console.WriteLine($"아이콘 로딩 실패: {ex.Message}");
+            }
         }
 
         private void SetupUI()
@@ -43,19 +72,38 @@ namespace SamsungOrder
                 RowCount = 3,
                 ColumnCount = 1,
                 Dock = DockStyle.Fill,
+                BackColor = Color.White,
+                Padding = new Padding(8, 8, 8, 8)
             };
             tableLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 90F)); // 안내 영역
             tableLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100F)); // 로그
-            tableLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 70F)); // 버튼
+            tableLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60F)); // 버튼
             tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 
-            // 안내 Panel
+            // 안내 Panel (둥근 모서리)
             var guidePanel = new Panel
             {
                 Dock = DockStyle.Fill,
                 BackColor = Color.FromArgb(220, 245, 255),
                 BorderStyle = BorderStyle.FixedSingle,
-                Padding = new Padding(10, 10, 10, 10)
+                Padding = new Padding(0),
+                Margin = new Padding(0, 0, 0, 8)
+            };
+            guidePanel.Paint += (s, e) =>
+            {
+                var g = e.Graphics;
+                g.SmoothingMode = SmoothingMode.AntiAlias;
+                using (var path = new GraphicsPath())
+                {
+                    int radius = 18;
+                    var rect = guidePanel.ClientRectangle;
+                    path.AddArc(rect.Left, rect.Top, radius, radius, 180, 90);
+                    path.AddArc(rect.Right - radius, rect.Top, radius, radius, 270, 90);
+                    path.AddArc(rect.Right - radius, rect.Bottom - radius, radius, radius, 0, 90);
+                    path.AddArc(rect.Left, rect.Bottom - radius, radius, radius, 90, 90);
+                    path.CloseFigure();
+                    guidePanel.Region = new Region(path);
+                }
             };
             var guideLabel1 = new Label
             {
@@ -64,7 +112,8 @@ namespace SamsungOrder
                 Font = new Font("맑은 고딕", 14, FontStyle.Bold),
                 ForeColor = Color.RoyalBlue,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Height = 32
+                Height = 36,
+                Padding = new Padding(0, 18, 0, 0)
             };
             var guideLabel2 = new Label
             {
@@ -73,7 +122,8 @@ namespace SamsungOrder
                 Font = new Font("맑은 고딕", 10, FontStyle.Regular),
                 ForeColor = Color.DimGray,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Height = 24
+                Height = 24,
+                Padding = new Padding(0, 0, 0, 8)
             };
             guidePanel.Controls.Add(guideLabel2);
             guidePanel.Controls.Add(guideLabel1);
@@ -85,21 +135,24 @@ namespace SamsungOrder
                 ReadOnly = true,
                 ScrollBars = ScrollBars.Vertical,
                 Dock = DockStyle.Fill,
-                Font = new Font("Consolas", 11),
+                Font = new Font("맑은 고딕", 11),
                 BackColor = Color.White,
                 ForeColor = Color.Black,
-                WordWrap = false
+                BorderStyle = BorderStyle.FixedSingle,
+                WordWrap = false,
+                Margin = new Padding(0, 0, 0, 0)
             };
 
-            // 버튼 패널 (왼쪽 정렬)
+            // 버튼 패널 (좌측 하단)
             var buttonPanel = new FlowLayoutPanel
             {
-                Dock = DockStyle.Fill,
+                Dock = DockStyle.Left,
                 FlowDirection = FlowDirection.LeftToRight,
                 WrapContents = false,
-                AutoSize = false,
+                AutoSize = true,
                 Height = 50,
-                Padding = new Padding(10, 10, 0, 10)
+                Padding = new Padding(10, 10, 0, 10),
+                Margin = new Padding(0, 0, 0, 0)
             };
             fileButton = new Button { Text = "파일 선택", AutoSize = true, MinimumSize = new Size(110, 36), Font = new Font("맑은 고딕", 10) };
             processButton = new Button { Text = "엑셀 처리 시작", AutoSize = true, MinimumSize = new Size(110, 36), Font = new Font("맑은 고딕", 10), Enabled = false };

@@ -71,6 +71,13 @@ namespace SamsungStatements
                 var formattedDate = convertedTime.ToString("M월 d일", CultureInfo.GetCultureInfo("ko-KR"));
 
                 var processedPlace = item.현장명;
+                // 변환 전 값 로그
+                logManager?.LogMessage($"DEBUG: 변환 전 업체명='{item.거래처명}', 현장명='{item.현장명}'");
+                if (item.거래처명.Replace(" ", "").Trim().Contains("삼성웰스토리(비)") && processedPlace.Replace(" ", "").Trim().Contains("직원식당"))
+                {
+                    logManager?.LogMessage($"DEBUG: 비계약 직원식당 변환: 원본='{item.현장명}', 변환='직원식당-비계약', 업체명='{item.거래처명}'");
+                    processedPlace = "직원식당-비계약";
+                }
 
                 if (processedPlace.Contains("-비계약"))
                 {

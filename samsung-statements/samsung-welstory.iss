@@ -10,7 +10,8 @@ SolidCompression=yes
 SetupIconFile=icon.ico
 
 [Files]
-Source: "bin\Release\net9.0-windows\win-x64\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "bin\Release\net9.0-windows\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "icon.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
 Name: "{group}\삼성웰스토리 결산서 전처리기"; Filename: "{app}\samsung-statements.exe"

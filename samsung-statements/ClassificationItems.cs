@@ -46,13 +46,13 @@ namespace SamsungStatements
 
             foreach (var data in prevNonContract)
             {
-                if (data.납품장소 != "직원식당-비계약")
+                if (data.납품장소.Replace(" ", "").Trim().Contains("직원식당"))
                 {
-                    nonContract.Add(data);
+                    nonEmployee.Add(data);
                 }
                 else
                 {
-                    nonEmployee.Add(data);
+                    nonContract.Add(data);
                 }
             }
 
@@ -75,7 +75,7 @@ namespace SamsungStatements
 
             if (nonEmployee.Count > 0)
             {
-                SaveToExcel(nonEmployee, workBook, "비계약 직원 식자재", logManager);
+                SaveToExcel(nonEmployee, workBook, "비계약 직원식당 식자재", logManager);
             }
 
             // --- 종합 시트 추가 ---
