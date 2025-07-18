@@ -54,6 +54,11 @@ namespace EtcOrder
                     sheet.Cells[1, 14].Value = "입고창고";
 
                     int rowIdx = 2;
+                    double totalQuantity = 0;
+                    double totalAmount = 0;
+                    double totalVAT = 0;
+                    double totalSum = 0;
+
                     foreach (var item in group)
                     {
                         // 입고일자 변환: yyyy-MM-dd, 시리얼 → M월 d일
@@ -75,37 +80,87 @@ namespace EtcOrder
                         sheet.Cells[rowIdx, 3].Value = item.품번;
                         sheet.Cells[rowIdx, 4].Value = item.품명;
                         sheet.Cells[rowIdx, 5].Value = item.규격;
+                        
+                        // 수량 처리 (정수로 반올림)
                         if (double.TryParse(item.수량.Replace(",", ""), out var v1))
-                            sheet.Cells[rowIdx, 6].Value = v1;
+                        {
+                            var roundedQuantity = Math.Round(v1);
+                            sheet.Cells[rowIdx, 6].Value = roundedQuantity;
+                            totalQuantity += roundedQuantity;
+                        }
                         else
+                        {
                             sheet.Cells[rowIdx, 6].Value = item.수량;
+                        }
+                        
                         sheet.Cells[rowIdx, 7].Value = item.단위;
+                        
+                        // 단가 처리 (정수로 반올림)
                         if (double.TryParse(item.단가.Replace(",", ""), out var v2))
-                            sheet.Cells[rowIdx, 8].Value = v2;
+                        {
+                            var roundedUnitPrice = Math.Round(v2);
+                            sheet.Cells[rowIdx, 8].Value = roundedUnitPrice;
+                        }
                         else
+                        {
                             sheet.Cells[rowIdx, 8].Value = item.단가;
+                        }
+                        
+                        // 금액 처리 (정수로 반올림)
                         if (double.TryParse(item.금액.Replace(",", ""), out var v3))
-                            sheet.Cells[rowIdx, 9].Value = v3;
+                        {
+                            var roundedAmount = Math.Round(v3);
+                            sheet.Cells[rowIdx, 9].Value = roundedAmount;
+                            totalAmount += roundedAmount;
+                        }
                         else
+                        {
                             sheet.Cells[rowIdx, 9].Value = item.금액;
+                        }
+                        
+                        // 부가세 처리 (정수로 반올림)
                         if (double.TryParse(item.부가세.Replace(",", ""), out var v4))
-                            sheet.Cells[rowIdx, 10].Value = v4;
+                        {
+                            var roundedVAT = Math.Round(v4);
+                            sheet.Cells[rowIdx, 10].Value = roundedVAT;
+                            totalVAT += roundedVAT;
+                        }
                         else
+                        {
                             sheet.Cells[rowIdx, 10].Value = item.부가세;
+                        }
+                        
+                        // 합계금액 처리 (정수로 반올림)
                         if (double.TryParse(item.합계금액.Replace(",", ""), out var v5))
-                            sheet.Cells[rowIdx, 11].Value = v5;
+                        {
+                            var roundedSum = Math.Round(v5);
+                            sheet.Cells[rowIdx, 11].Value = roundedSum;
+                            totalSum += roundedSum;
+                        }
                         else
+                        {
                             sheet.Cells[rowIdx, 11].Value = item.합계금액;
+                        }
+                        
                         sheet.Cells[rowIdx, 12].Value = item.거래처명;
                         sheet.Cells[rowIdx, 13].Value = item.현장명;
                         sheet.Cells[rowIdx, 14].Value = item.입고창고;
                         rowIdx++;
                     }
+
+                    // "계" 행 추가 (마지막 데이터 행보다 2-3행 아래)
+                    int summaryRow = rowIdx + 2;
+                    sheet.Cells[summaryRow, 5].Value = "계";
+                    sheet.Cells[summaryRow, 6].Value = Math.Round(totalQuantity);
+                    sheet.Cells[summaryRow, 9].Value = Math.Round(totalAmount);
+                    sheet.Cells[summaryRow, 10].Value = Math.Round(totalVAT);
+                    sheet.Cells[summaryRow, 11].Value = Math.Round(totalSum);
+
                     // 서식 지정
                     foreach (int col in new[] {1, 3, 4, 5, 7, 12, 13, 14})
                         sheet.Column(col).Style.Numberformat.Format = "@";
                     foreach (int col in new[] {6, 8, 9, 10, 11})
-                        sheet.Column(col).Style.Numberformat.Format = "#,##0.00";
+                        sheet.Column(col).Style.Numberformat.Format = "#,##0";
                     sheet.Column(2).Style.Numberformat.Format = "@";
 
                     sheet.Cells.AutoFitColumns();

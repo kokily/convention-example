@@ -323,7 +323,8 @@ namespace SamsungOrder
                 this.Invoke(() =>
                 {
                     string outputFileName = $"분류된_{Path.GetFileNameWithoutExtension(droppedFilePath)}.xlsx";
-                    string outputFilePath = Path.Combine(Path.GetDirectoryName(droppedFilePath)!, outputFileName);
+                    string? directory = Path.GetDirectoryName(droppedFilePath);
+                    string outputFilePath = Path.Combine(directory ?? "", outputFileName);
                     MessageBox.Show($"엑셀 파일이 성공적으로 처리되어\n{outputFilePath} (으)로 저장되었습니다", 
                         "성공", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     LogWithTime($"엑셀 파일 저장 완료: {outputFilePath}");

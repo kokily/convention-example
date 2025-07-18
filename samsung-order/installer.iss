@@ -11,6 +11,8 @@ SolidCompression=yes
 SetupIconFile=icon.ico
 UninstallDisplayIcon={app}\samsung-order.exe
 PrivilegesRequired=admin
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
 
 [Languages]
 Name: "korean"; MessagesFile: "compiler:Languages\Korean.isl"

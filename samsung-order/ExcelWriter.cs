@@ -34,16 +34,53 @@ namespace SamsungOrder
             var classifiedData = data.GroupBy(item => item.사업장명)
                                    .ToDictionary(group => group.Key, group => group.ToList());
 
-            // 각 사업장별 시트 생성 및 데이터 추가
-            foreach (var kvp in classifiedData)
+            // 지정된 사업장 순서
+            string[] orderedBusinessUnits = {
+                "양식뷔페",
+                "양식뷔페-비계약",
+                "양식소모품",
+                "양식소모품-비계약",
+                "양정식",
+                "양정식-비계약",
+                "연회부",
+                "연회부-비계약",
+                "연회부소모품",
+                "연회부소모품-비계약",
+                "운영지원부",
+                "운영지원부-비계약",
+                "중식뷔페",
+                "중식뷔페-비계약",
+                "중식소모품",
+                "중식소모품-비계약",
+                "중정식",
+                "중정식-비계약",
+                "직원식당",
+                "직원식당-비계약",
+                "한정식",
+                "한정식-비계약"
+            };
+
+            // 지정된 순서대로 사업장별 시트 생성 및 데이터 추가
+            foreach (string businessUnit in orderedBusinessUnits)
             {
-                string sheetName = kvp.Key;
-                var sheetData = kvp.Value;
-
-                Console.WriteLine($"디버그: 시트 '{sheetName}' 생성 및 데이터 추가 시작, 행 수: {sheetData.Count}");
-
-                var worksheet = package.Workbook.Worksheets.Add(sheetName);
-                AddSingleSheetDataOnly(worksheet, sheetData);
+                if (classifiedData.ContainsKey(businessUnit))
+                {
+                    var sheetData = classifiedData[businessUnit];
+                    Console.WriteLine($"디버그: 시트 '{businessUnit}' 생성 및 데이터 추가 시작, 행 수: {sheetData.Count}");
+                    var worksheet = package.Workbook.Worksheets.Add(businessUnit);
+                    AddSingleSheetDataOnly(worksheet, sheetData);
+                }
+            }
+            // orderedBusinessUnits에 없는 사업장명도 추가
+            foreach (var key in classifiedData.Keys)
+            {
+                if (!orderedBusinessUnits.Contains(key))
+                {
+                    var sheetData = classifiedData[key];
+                    Console.WriteLine($"디버그: 시트 '{key}'(추가) 생성 및 데이터 추가 시작, 행 수: {sheetData.Count}");
+                    var worksheet = package.Workbook.Worksheets.Add(key);
+                    AddSingleSheetDataOnly(worksheet, sheetData);
+                }
             }
 
             // 결과물 엑셀 파일 저장

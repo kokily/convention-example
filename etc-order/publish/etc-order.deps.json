@@ -1,11 +1,12 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v9.0",
+    "name": ".NETCoreApp,Version=v9.0/win-x64",
     "signature": ""
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v9.0": {
+    ".NETCoreApp,Version=v9.0": {},
+    ".NETCoreApp,Version=v9.0/win-x64": {
       "etc-order/1.0.0": {
         "dependencies": {
           "EPPlus": "8.0.6"
@@ -140,31 +141,10 @@
         }
       },
       "System.ComponentModel.Annotations/5.0.0": {},
-      "System.Security.Cryptography.Pkcs/9.0.3": {
-        "runtime": {
-          "lib/net9.0/System.Security.Cryptography.Pkcs.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.325.11113"
-          }
-        },
-        "runtimeTargets": {
-          "runtimes/win/lib/net9.0/System.Security.Cryptography.Pkcs.dll": {
-            "rid": "win",
-            "assetType": "runtime",
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.325.11113"
-          }
-        }
-      },
+      "System.Security.Cryptography.Pkcs/9.0.3": {},
       "System.Security.Cryptography.Xml/9.0.3": {
         "dependencies": {
           "System.Security.Cryptography.Pkcs": "9.0.3"
-        },
-        "runtime": {
-          "lib/net9.0/System.Security.Cryptography.Xml.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.325.11113"
-          }
         }
       },
       "System.Text.Encoding.CodePages/9.0.3": {}
